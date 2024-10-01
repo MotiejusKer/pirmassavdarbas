@@ -1,0 +1,2 @@
+# pirmassavdarbas
+Savarankiško darbo projektas
