@@ -4,7 +4,7 @@ studentas::studentas()
 {
 	var = "Test";
 	pav = "Test";
-	nd = { 1,2,3 };
+	nd = { 1,2,3, };
 	egz = 0;
 	Vid();
 	Med();
@@ -20,6 +20,18 @@ studentas::studentas(string Var_, string Pav_, vector <double> Paz_, double Egz_
 	Med();
 	Rez(vid);
 }
+
+studentas::studentas(const studentas &Temp) {
+	var = Temp.var;
+	pav = Temp.pav;
+	nd = Temp.nd;
+	vid = Temp.vid;
+	med = Temp.med;
+	rez = Temp.rez;
+	egz = Temp.egz;
+}
+
+
 studentas::~studentas() {
 	var.clear();
 	pav.clear();
@@ -69,4 +81,34 @@ void studentas::Med() {
 	else {
 		med = 0;
 	}
+}
+
+std::ostream& operator<<(std::ostream& out, const studentas& s) {
+	out << setw(10) << left << s.var << "  " << setw(10) << left << s.pav << setw(10) << "ND.:";
+	for (auto d : s.nd) out << setw(10) << setprecision(2) << fixed << d << "  ";
+	out << setw(10) << "Egz.:" << setw(10) << setprecision(2) << fixed << s.egz << setw(10)
+		<< "Rez.:" << setw(10) << setprecision(2) << fixed << s.rez << "Vid. " << s.vid << " Med. " << s.med;
+	return out;
+}
+
+std::istream& operator>>(std::istream& in, studentas& s) {
+	cout << "Iveskite varda ir pavarde: ";
+	in >> s.var >> s.pav;
+
+	s.nd.clear();
+	double paz;
+	for (int i = 0; i < 3; i++) { // Įveskite tris namų darbų pažymius
+		cout << "Iveskite namu darbu pazymi " << i + 1 << ": ";
+		in >> paz;
+		s.nd.push_back(paz);
+	}
+
+	cout << "Iveskite egzamino pazymi: ";
+	in >> s.egz;
+
+	s.Vid();
+	s.Med();
+	s.Rez(s.vid);
+
+	return in;
 }
