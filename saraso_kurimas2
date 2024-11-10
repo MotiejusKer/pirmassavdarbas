@@ -1,0 +1,39 @@
+#include "Header.h"
+
+
+int main() {
+    std::ofstream rf("studentu1000.txt");
+    std::srand(static_cast<unsigned int>(std::time(0)));  // Atsitiktinumo sėkla
+    int numStudents = 1000;  // Studentų kiekis
+
+    for (int j = 1; j <= numStudents; ++j) {
+        std::vector<int> grades;
+        for (int i = 0; i < 11; ++i) {
+            grades.push_back(std::rand() % 11);  // Generuojame pažymius nuo 0 iki 10
+        }
+        int examGrade = std::rand() % 11;  // Atsitiktinis egzamino pažymys nuo 0 iki 10
+
+        double gradesAvg = std::accumulate(grades.begin(), grades.end(), 0.0) / grades.size();
+
+        // Apskaičiuojame bendrą vidurkį pagal formulę
+        double finalAvg = 0.4 * gradesAvg + 0.6 * examGrade;
+
+        // Atspausdiname studento vardą, pavardę ir pažymius
+        if (finalAvg > 5) {
+            rf << "Vardas" << j << std::setw(10) << "Pavarde" << j;
+            for (int grade : grades) {
+                rf << std::setw(10) << grade;
+            }
+            rf << std::setw(10) << examGrade <<"    "<< finalAvg << " Galvocius" << std::endl;
+        }
+        else {
+            rf << "Vardas" << j << std::setw(10) << "Pavarde" << j;
+            for (int grade : grades) {
+                rf << std::setw(10) << grade;
+            }
+            rf << std::setw(10) << examGrade << "    " << finalAvg << " Nuskriaustukas" << std::endl;
+        }
+    }
+
+    return 0;
+}
