@@ -1,0 +1,41 @@
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <chrono>
+#include <string>
+
+// Funkcija skaito failą į buferį ir kopijuoja į kitą failą
+void bufer_nusk(const std::string& read_vardas, const std::string& write_vardas) {
+    std::stringstream my_buffer;
+
+    // Matavimas: failo nuskaitymas į buferį
+    auto start = std::chrono::high_resolution_clock::now();
+    std::ifstream open_f(read_vardas);
+    if (!open_f.is_open()) {
+        std::cerr << "Nepavyko atidaryti failo skaitymui: " << read_vardas << "\n";
+        return;
+    }
+    my_buffer << open_f.rdbuf();
+    open_f.close();
+    auto diff = std::chrono::high_resolution_clock::now() - start;
+    std::cout << "Failo nuskaitymas į buferį užtruko: " << diff.count() << " s\n";
+
+    // Matavimas: buferio turinio įrašymas į failą
+    start = std::chrono::high_resolution_clock::now();
+    std::ofstream out_f(write_vardas);
+    if (!out_f.is_open()) {
+        std::cerr << "Nepavyko atidaryti failo rašymui: " << write_vardas << "\n";
+        return;
+    }
+    out_f << my_buffer.str();
+    out_f.close();
+    diff = std::chrono::high_resolution_clock::now() - start;
+    std::cout << "Failo įrašymas iš buferio užtruko: " << diff.count() << " s\n";
+}
+
+int main() {
+    std::cout << "Greitas variantas (per bufer'į):\n";
+    bufer_nusk("studentu1000.txt", "studentai_copy.txt");
+    return 0;
+}
+//nuskaito tą patį sukurtą studentu1000.txt failą
