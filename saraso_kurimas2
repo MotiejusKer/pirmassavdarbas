@@ -3,6 +3,7 @@
 
 int main() {
     std::ofstream rf("studentu1000.txt");
+    std::ofstream rf2("studentu.2.1000.txt");
     std::srand(static_cast<unsigned int>(std::time(0)));  // Atsitiktinumo sėkla
     int numStudents = 1000;  // Studentų kiekis
 
@@ -27,11 +28,11 @@ int main() {
             rf << std::setw(10) << examGrade <<"    "<< finalAvg << " Galvocius" << std::endl;
         }
         else {
-            rf << "Vardas" << j << std::setw(10) << "Pavarde" << j;
+            rf2 << "Vardas" << j << std::setw(10) << "Pavarde" << j;
             for (int grade : grades) {
-                rf << std::setw(10) << grade;
+                rf2 << std::setw(10) << grade;
             }
-            rf << std::setw(10) << examGrade << "    " << finalAvg << " Nuskriaustukas" << std::endl;
+            rf2 << std::setw(10) << examGrade << "    " << finalAvg << " Nuskriaustukas" << std::endl;
         }
     }
 
