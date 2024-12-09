@@ -1,0 +1,147 @@
+#include <iostream>
+#include <iomanip>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <numeric>
+#include <cstdlib>
+#include <ctime>
+#include <fstream>
+#include <sstream>
+#include <chrono>
+#include <random>
+#include <list>
+#include <deque>
+
+using std::ofstream;
+using std::cout;
+using std::cin;
+using std::endl;
+using std::setw;
+using std::setprecision;
+using std::fixed;
+using std::left;
+using std::right;
+using std::string;
+using std::vector;
+using std::list;
+using std::deque;
+
+using std::accumulate;
+using std::sort;
+using std::to_string;
+
+void create_student_files(int numStudents, const std::string& inputFile, const std::string& passFile, const std::string& failFile) {
+    std::ofstream input(inputFile);
+    std::ofstream rf(passFile);
+    std::ofstream rf2(failFile);
+    std::srand(static_cast<unsigned int>(std::time(0))); // Atsitiktinumo sėkla
+
+    auto start = std::chrono::high_resolution_clock::now();
+
+    for (int j = 1; j <= numStudents; ++j) {
+        std::vector<int> grades;
+        for (int i = 0; i < 11; ++i) {
+            grades.push_back(std::rand() % 11); // Generuojame pažymius nuo 0 iki 10
+        }
+        int examGrade = std::rand() % 11; // Atsitiktinis egzamino pažymys nuo 0 iki 10
+
+        double gradesAvg = std::accumulate(grades.begin(), grades.end(), 0.0) / grades.size();
+        double finalAvg = 0.4 * gradesAvg + 0.6 * examGrade;
+
+        // Įrašome į pradinį failą
+        input << "Vardas" << j << std::setw(10) << "Pavarde" << j;
+        for (int grade : grades) {
+            input << std::setw(10) << grade;
+        }
+        input << std::setw(10) << examGrade << "    " << finalAvg << std::endl;
+
+        // Įrašome į atskirus failus pagal rezultatą
+        if (finalAvg > 5) {
+            rf << "Vardas" << j << std::setw(10) << "Pavarde" << j;
+            for (int grade : grades) {
+                rf << std::setw(10) << grade;
+            }
+            rf << std::setw(10) << examGrade << "    " << finalAvg << " Galvocius" << std::endl;
+        }
+        else {
+            rf2 << "Vardas" << j << std::setw(10) << "Pavarde" << j;
+            for (int grade : grades) {
+                rf2 << std::setw(10) << grade;
+            }
+            rf2 << std::setw(10) << examGrade << "    " << finalAvg << " Nuskriaustukas" << std::endl;
+        }
+    }
+
+    auto diff = std::chrono::high_resolution_clock::now() - start;
+    std::cout << "Failų kūrimas užtruko: " << diff.count() << " s\n";
+}
+
+void process_files(const std::string& read_vardas, const std::string& passFile, const std::string& failFile) {
+    std::stringstream my_buffer;
+
+    // Matavimas: failo nuskaitymas į buferį
+    auto start = std::chrono::high_resolution_clock::now();
+    std::ifstream open_f(read_vardas);
+    if (!open_f.is_open()) {
+        std::cerr << "Nepavyko atidaryti failo skaitymui: " << read_vardas << "\n";
+        return;
+    }
+    my_buffer << open_f.rdbuf();
+    open_f.close();
+    auto diff = std::chrono::high_resolution_clock::now() - start;
+    std::cout << "Failo nuskaitymas į buferį užtruko: " << diff.count() << " s\n";
+
+    // Rūšiavimas
+    start = std::chrono::high_resolution_clock::now();
+    std::vector<std::string> passed, failed;
+    std::string line;
+    while (std::getline(my_buffer, line)) {
+        std::istringstream iss(line);
+        std::vector<std::string> tokens;
+        std::string token;
+        while (iss >> token) {
+            tokens.push_back(token);
+        }
+        double finalAvg = std::stod(tokens.back());
+        if (finalAvg > 5) {
+            passed.push_back(line);
+        }
+        else {
+            failed.push_back(line);
+        }
+    }
+    diff = std::chrono::high_resolution_clock::now() - start;
+    std::cout << "Rūšiavimas užtruko: " << diff.count() << " s\n";
+
+    // Išvedimas į failus
+    start = std::chrono::high_resolution_clock::now();
+    std::ofstream out_pass(passFile);
+    for (const auto& student : passed) {
+        out_pass << student << "\n";
+    }
+    out_pass.close();
+
+    std::ofstream out_fail(failFile);
+    for (const auto& student : failed) {
+        out_fail << student << "\n";
+    }
+    out_fail.close();
+    diff = std::chrono::high_resolution_clock::now() - start;
+    std::cout << "Išvedimas į failus užtruko: " << diff.count() << " s\n";
+}
+
+int main() {
+    int numStudents = 10000;
+    std::string inputFile = "studentu1000.txt";
+    std::string passFile = "studentai_passed.txt";
+    std::string failFile = "studentai_failed.txt";
+
+    // Failų kūrimas
+    create_student_files(numStudents, inputFile, passFile, failFile);
+
+    // Nuskaitymas ir apdorojimas
+    process_files(inputFile, passFile, failFile);
+
+    return 0;
+}
